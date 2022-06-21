@@ -28,35 +28,56 @@ class Eva {
 		if (Array.isArray(exp)) {
 			/** 数学运算 */
 			if (exp[0] === '+') {
-				return this.eval(exp[1]) + this.eval(exp[2]);
+				return this.eval(exp[1], env) + this.eval(exp[2], env);
 			}
 
 			if (exp[0] === '-') {
-				return this.eval(exp[1]) - this.eval(exp[2]);
+				return this.eval(exp[1], env) - this.eval(exp[2], env);
 			}
 
 			if (exp[0] === '*') {
-				return this.eval(exp[1]) * this.eval(exp[2]);
+				return this.eval(exp[1], env) * this.eval(exp[2], env);
 			}
 
 			if (exp[0] === '/') {
-				return this.eval(exp[1]) / this.eval(exp[2]);
+				return this.eval(exp[1], env) / this.eval(exp[2], env);
 			}
 
 			/** 变量声明 */
 			if (exp[0] === 'var') {
 				const [_, name, value] = exp;
-				return env.define(name,  this.eval(value));
+				return env.define(name,  this.eval(value, env));
 			}
+
+      /** 块区域 */
+      if (exp[0] === 'begin') {
+        // 创建新的作用域环境，当前env环境作为父级
+        const blockEnv = new  Environment({}, env);
+        return this._evalBlock(exp, blockEnv)
+      }
+
+      /** 重新赋值变量 */
+      if (exp[0] === 'set') {
+        const [_, name, value] = exp;
+        return env.assign(name, this.eval(value, env));
+      }
 		}
 
-		/** 获取声明变量值 */
+		/** 获取声明变量的值 */
 		if (isVariableName(exp)) {
 			return env.lookup(exp)
 		}
 
 		throw `Unimplemented: ${JSON.stringify(exp)}`;
 	}
+  _evalBlock(block, env) {
+    let result;
+    const [_, ...expressions] = block;
+    expressions.forEach(exp => {
+      result = this.eval(exp, env)
+    })
+    return result;
+  }
 }
 /**
  * 判断是否是一个数字
@@ -97,4 +118,16 @@ assert.strictEqual(eva.eval(['/',1,1]), 1)
 assert.strictEqual(eva.eval(['*',1,1]), 1)
 assert.strictEqual(eva.eval(['var','test','"true"']), 'true')
 assert.strictEqual(eva.eval(['var','test','true']), true)
+assert.strictEqual(eva.eval(['begin',
+  ['+', 2, 2]
+]), 4)
+assert.strictEqual(eva.eval([
+  'begin',
+  ['var', 'x', 2],
+  [ 'begin',
+    ['set', 'x', 4],
+    ['var', 'y', 2]
+  ],
+  'x'
+]), 4)
 console.log('All pass')
