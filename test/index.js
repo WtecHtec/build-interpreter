@@ -1,4 +1,4 @@
-const assert = require('assert');
+
 const Environment = require('./Environment')
 class Eva {
 	/**
@@ -43,6 +43,23 @@ class Eva {
 				return this.eval(exp[1], env) / this.eval(exp[2], env);
 			}
 
+			/** 比较运算符 */
+			if (exp[0] === '<') {
+				return this.eval(exp[1], env) < this.eval(exp[2], env);
+			}
+			if (exp[0] === '<=') {
+				return this.eval(exp[1], env) <= this.eval(exp[2], env);
+			}
+			if (exp[0] === '==') {
+				return this.eval(exp[1], env) == this.eval(exp[2], env);
+			}
+			if (exp[0] === '>') {
+				return this.eval(exp[1], env) > this.eval(exp[2], env);
+			}
+			if (exp[0] === '>=') {
+				return this.eval(exp[1], env) >= this.eval(exp[2], env);
+			}
+
 			/** 变量声明 */
 			if (exp[0] === 'var') {
 				const [_, name, value] = exp;
@@ -61,6 +78,30 @@ class Eva {
         const [_, name, value] = exp;
         return env.assign(name, this.eval(value, env));
       }
+
+			/** if 分支 */
+			if (exp[0] === 'if') {
+				/**
+				 * condition 判断条件
+				 * consequent true 操作
+				 * alternate false 操作
+				 */
+				const [_, condition, consequent, alternate] = exp;
+				if (this.eval(condition , env)) {
+					return this.eval(consequent, env)
+				}
+				return this.eval(alternate, env)
+			}
+
+			/** while 循环体 */
+			if (exp[0] === 'while') {
+				const [_, condition, body] = exp;
+				let result;
+				while(this.eval(condition, env)) {
+					result = this.eval(body, env);
+				}
+				return result;
+			}
 		}
 
 		/** 获取声明变量的值 */
@@ -70,6 +111,13 @@ class Eva {
 
 		throw `Unimplemented: ${JSON.stringify(exp)}`;
 	}
+
+	/**
+	 * 块级处理
+	 * @param {*} block 
+	 * @param {*} env 
+	 * @returns 
+	 */
   _evalBlock(block, env) {
     let result;
     const [_, ...expressions] = block;
@@ -104,30 +152,4 @@ function isVariableName(exp) {
 	return typeof exp === 'string' && /^[a-zA-Z][a-zA-Z0-9_]*$/.test(exp);
 }
 
-const eva = new Eva(new Environment({
-	true: true,
-	false: false,
-	null: null,
-	version: '0.1'
-}));
-assert.strictEqual(eva.eval(1), 1)
-assert.strictEqual(eva.eval('"hello word"'), 'hello word')
-assert.strictEqual(eva.eval(['+',['*', 2, 2],1]), 5)
-assert.strictEqual(eva.eval(['-',1,1]), 0)
-assert.strictEqual(eva.eval(['/',1,1]), 1)
-assert.strictEqual(eva.eval(['*',1,1]), 1)
-assert.strictEqual(eva.eval(['var','test','"true"']), 'true')
-assert.strictEqual(eva.eval(['var','test','true']), true)
-assert.strictEqual(eva.eval(['begin',
-  ['+', 2, 2]
-]), 4)
-assert.strictEqual(eva.eval([
-  'begin',
-  ['var', 'x', 2],
-  [ 'begin',
-    ['set', 'x', 4],
-    ['var', 'y', 2]
-  ],
-  'x'
-]), 4)
-console.log('All pass')
+module.exports = Eva;
