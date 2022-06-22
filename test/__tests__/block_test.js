@@ -1,8 +1,5 @@
 const assert = require('assert');
 module.exports = (eva) => {
-	assert.strictEqual(eva.eval(['begin',
-		['+', 2, 2]
-	]), 4)
 	assert.strictEqual(eva.eval([
 		'begin',
 		['var', 'x', 2],
