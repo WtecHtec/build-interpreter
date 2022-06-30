@@ -1,11 +1,12 @@
 
 const Environment = require('./Environment')
+const globalEnv = require('./GlobalEnvironment')
 class Eva {
 	/**
 	 * 创建全局变量环境
 	 * @param {*} global 
 	 */
-	constructor(global = new Environment()) {
+	constructor(global = globalEnv) {
 		this.global = global
 	}
 	/**
@@ -17,49 +18,15 @@ class Eva {
 	 */
 	eval(exp, env = this.global) {
 
-		if (isNumber(exp)) {
+		if (this._isNumber(exp)) {
 			return exp;
 		}
 
-		if (isString(exp)) {
+		if (this._isString(exp)) {
 			return exp.slice(1, -1);
 		}
 
 		if (Array.isArray(exp)) {
-			/** 数学运算 */
-			if (exp[0] === '+') {
-				return this.eval(exp[1], env) + this.eval(exp[2], env);
-			}
-
-			if (exp[0] === '-') {
-				return this.eval(exp[1], env) - this.eval(exp[2], env);
-			}
-
-			if (exp[0] === '*') {
-				return this.eval(exp[1], env) * this.eval(exp[2], env);
-			}
-
-			if (exp[0] === '/') {
-				return this.eval(exp[1], env) / this.eval(exp[2], env);
-			}
-
-			/** 比较运算符 */
-			if (exp[0] === '<') {
-				return this.eval(exp[1], env) < this.eval(exp[2], env);
-			}
-			if (exp[0] === '<=') {
-				return this.eval(exp[1], env) <= this.eval(exp[2], env);
-			}
-			if (exp[0] === '==') {
-				return this.eval(exp[1], env) == this.eval(exp[2], env);
-			}
-			if (exp[0] === '>') {
-				return this.eval(exp[1], env) > this.eval(exp[2], env);
-			}
-			if (exp[0] === '>=') {
-				return this.eval(exp[1], env) >= this.eval(exp[2], env);
-			}
-
 			/** 变量声明 */
 			if (exp[0] === 'var') {
 				const [_, name, value] = exp;
@@ -102,10 +69,19 @@ class Eva {
 				}
 				return result;
 			}
+			/**
+			 * 内置函数处理
+			 */
+			const fn = this.eval(exp[0], env);
+			const args = exp.slice(1).map(item => this.eval(item, env));
+			if (typeof fn === 'function') {
+				return fn(...args);
+			}
+
 		}
 
 		/** 获取声明变量的值 */
-		if (isVariableName(exp)) {
+		if (this._isVariableName(exp)) {
 			return env.lookup(exp)
 		}
 
@@ -126,30 +102,28 @@ class Eva {
     })
     return result;
   }
-}
-/**
- * 判断是否是一个数字
- * @param {*} exp 
- */
-function isNumber(exp) {
-	return typeof exp === 'number';
-}
-
-/**
- * 判断是否是一个字符串
- * @param {*} exp 
- */
-function isString(exp) {
-	return typeof exp === 'string' && exp[0] === '"' && exp.slice(-1) === '"';
-}
-
-/**
- * 判断是否是一个变量
- * @param {*} exp 
- * @returns 
- */
-function isVariableName(exp) {
-	return typeof exp === 'string' && /^[a-zA-Z][a-zA-Z0-9_]*$/.test(exp);
+	/**
+	 * 判断是否是一个数字
+	 * @param {*} exp 
+	 */
+	_isNumber(exp) {
+		return typeof exp === 'number';
+	}
+	/**
+	 * 判断是否是一个字符串
+	 * @param {*} exp 
+	 */
+	_isString(exp) {
+		return typeof exp === 'string' && exp[0] === '"' && exp.slice(-1) === '"';
+	}
+	/**
+	 * 判断是否是一个变量
+	 * @param {*} exp 
+	 * @returns 
+	 */
+	_isVariableName(exp) {
+		return typeof exp === 'string' && /^[+\-*/<>=a-zA-Za-zA-Z0-9_]*$/.test(exp);
+	}
 }
 
 module.exports = Eva;

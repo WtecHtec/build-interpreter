@@ -6,16 +6,12 @@ const selfTest = require('./self_test')
 const variableTest = require('./variable_test')
 const ifTest = require('./if_test')
 const whileTest = require('./while_test')
-const eva = new Eva(new Environment({
-	true: true,
-	false: false,
-	null: null,
-	version: '0.1'
-}));
+const eva = new Eva();
 selfTest(eva);
 mathTest(eva);
 variableTest(eva);
 blockTest(eva);
 ifTest(eva);
 whileTest(eva);
+eva.eval('print', '"jjjj"', '"kk"'])
 console.log('All pass')
