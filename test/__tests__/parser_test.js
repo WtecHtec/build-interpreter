@@ -1,9 +1,12 @@
-const JSONParser = require('../parser/evaParser');
-
-let value = JSONParser.parse(`
-	(begin 
-		(+ x x)
+const run = require('../run')
+const assert = require('assert');
+module.exports = (eva) => {
+	assert.strictEqual(
+		run(`
+		(begin
+			(+ 3 3)
+			)
+		`), 
+		6
 	)
-`);
-
-console.log(value); // JS object: {x: 10, y: [1, 2]}
+}

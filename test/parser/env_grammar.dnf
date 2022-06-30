@@ -11,7 +11,7 @@ Exp
 	| List
 	;
 Atom
-	: NUMBER { $$ = NUMBER($1)}
+	: NUMBER { $$ = Number($1)}
 	| STRING
 	| SYMBOL
 	;

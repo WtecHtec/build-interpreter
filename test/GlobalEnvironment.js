@@ -1,4 +1,9 @@
 const Environment = require('./Environment')
+/**
+ * 全局变量
+ * 内置函数
+ * 内置常量
+ */
 module.exports = new Environment({
 	true: true,
 	false: false,

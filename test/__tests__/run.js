@@ -6,6 +6,7 @@ const selfTest = require('./self_test')
 const variableTest = require('./variable_test')
 const ifTest = require('./if_test')
 const whileTest = require('./while_test')
+const parserTest = require('./parser_test')
 const eva = new Eva();
 selfTest(eva);
 mathTest(eva);
@@ -13,5 +14,7 @@ variableTest(eva);
 blockTest(eva);
 ifTest(eva);
 whileTest(eva);
-eva.eval('print', '"jjjj"', '"kk"'])
+eva.eval(['print', '"jjjj"', '"kk"'])
+parserTest()
 console.log('All pass')
+
