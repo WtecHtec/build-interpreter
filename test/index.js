@@ -69,8 +69,22 @@ class Eva {
 				}
 				return result;
 			}
+
 			/**
-			 * 内置函数处理
+			 * 定义一个函数
+			 */
+			if (exp[0] === 'def') {
+				const [, name, params, body] = exp;
+				const fn = {
+					params,
+					body,
+					env,
+				}
+				return env.define(name, fn)
+			}
+
+			/**
+			 * 执行内置函数
 			 */
 			const fn = this.eval(exp[0], env);
 			const args = exp.slice(1).map(item => this.eval(item, env));
@@ -78,6 +92,16 @@ class Eva {
 				return fn(...args);
 			}
 
+			/**
+			 * 执行自定义函数
+			 * 创建闭包概念
+			 */
+			const activationRecord = {};
+			fn.params.forEach((param, index) => {
+				activationRecord[param] = args[index];
+			})
+			const activationEnv = new  Environment(activationRecord, fn.env);
+			return this._evalBody(fn.body, activationEnv);
 		}
 
 		/** 获取声明变量的值 */
@@ -88,6 +112,18 @@ class Eva {
 		throw `Unimplemented: ${JSON.stringify(exp)}`;
 	}
 
+	/**
+	 * 执行函数体
+	 * @param {*} body 
+	 * @param {*} env 
+	 * @returns 
+	 */
+	_evalBody(body, env) {
+		if (body[0] === 'beigin') {
+			return this._evalBlock(body, env);
+		}
+		return this.eval(body, env);
+	}
 	/**
 	 * 块级处理
 	 * @param {*} block 
