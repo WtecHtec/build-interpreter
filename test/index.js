@@ -71,7 +71,7 @@ class Eva {
 			}
 
 			/**
-			 * 定义一个函数
+			 * 定义一个函数 同时 声明一个匿名函数
 			 */
 			if (exp[0] === 'def') {
 				const [, name, params, body] = exp;
@@ -80,9 +80,23 @@ class Eva {
 					body,
 					env,
 				}
-				return env.define(name, fn)
+				// 声明一个匿名函数
+				const varExp = ['var', name, ['lambda', params, body]]
+				return this.eval(varExp, env);
+				// return env.define(name, fn)
 			}
-
+      
+			/**
+			 * 声明一个匿名函数
+			 */
+			if (exp[0] === 'lambda') {
+				const [, params, body] = exp;
+				return {
+					params,
+					body,
+					env,
+				}
+			}
 			/**
 			 * 执行内置函数
 			 */

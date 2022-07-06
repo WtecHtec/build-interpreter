@@ -8,6 +8,7 @@ const ifTest = require('./if_test')
 const whileTest = require('./while_test')
 const parserTest = require('./parser_test')
 const defFuncTest = require('./def_func_test')
+const lambdaFuncTest = require('./lambda_func_test')
 const eva = new Eva();
 selfTest(eva);
 mathTest(eva);
@@ -18,5 +19,6 @@ whileTest(eva);
 eva.eval(['print', '"jjjj"', '"kk"']);
 parserTest();
 defFuncTest();
+lambdaFuncTest();
 console.log('All pass')
 
