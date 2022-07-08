@@ -1,6 +1,7 @@
 
-const Environment = require('./Environment')
-const globalEnv = require('./GlobalEnvironment')
+const Environment = require('./Environment');
+const globalEnv = require('./GlobalEnvironment');
+const Transformer = require('./Transformer');
 class Eva {
 	/**
 	 * 创建全局变量环境
@@ -8,6 +9,7 @@ class Eva {
 	 */
 	constructor(global = globalEnv) {
 		this.global = global
+		this._transformer = new Transformer();
 	}
 	/**
 	 *  创建eva解释器
@@ -70,20 +72,31 @@ class Eva {
 				return result;
 			}
 
+			/** while 循环体 */
+			if (exp[0] === 'switch') {
+				const switchExp = this._transformer.transformSwitchToIf(exp);
+				return this.eval(switchExp, env);
+			}
+
 			/**
 			 * 定义一个函数 同时 声明一个匿名函数
 			 */
 			if (exp[0] === 'def') {
-				const [, name, params, body] = exp;
-				const fn = {
-					params,
-					body,
-					env,
-				}
-				// 声明一个匿名函数
-				const varExp = ['var', name, ['lambda', params, body]]
-				return this.eval(varExp, env);
+				// 声明普通函数
+				// const [, name, params, body] = exp;
+				// const fn = {
+				// 	params,
+				// 	body,
+				// 	env,
+				// }
 				// return env.define(name, fn)
+
+				// 声明一个匿名函数
+				// const varExp = ['var', name, ['lambda', params, body]]
+				// return this.eval(varExp, env);
+				
+				const varExp = this._transformer.transformDefToVarLambda(exp);
+				return this.eval(varExp, env);
 			}
       
 			/**
