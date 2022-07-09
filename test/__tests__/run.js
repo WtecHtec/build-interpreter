@@ -10,6 +10,9 @@ const parserTest = require('./parser_test')
 const defFuncTest = require('./def_func_test')
 const lambdaFuncTest = require('./lambda_func_test')
 const switchTest = require('./switch_test')
+const incTest = require('./inc_test')
+const decTest = require('./dec_test')
+const forTest = require('./for_test')
 const eva = new Eva();
 selfTest(eva);
 mathTest(eva);
@@ -22,5 +25,8 @@ parserTest();
 defFuncTest();
 lambdaFuncTest();
 switchTest();
+incTest();
+decTest();
+forTest();
 console.log('All pass')
 

@@ -72,16 +72,56 @@ class Eva {
 				return result;
 			}
 
-			/** while 循环体 */
+			/** switch 分支 */
 			if (exp[0] === 'switch') {
 				const switchExp = this._transformer.transformSwitchToIf(exp);
 				return this.eval(switchExp, env);
 			}
 
+      /**
+       * 自增
+       */
+      if (exp[0] === '++') {
+				const incExp = this._transformer.transformInc(exp);
+				return this.eval(incExp, env);
+			}
+
+      /**
+       * 自减
+       */
+      if (exp[0] === '--') {
+				const decExp = this._transformer.transformDec(exp);
+				return this.eval(decExp, env);
+			}
+
+      /**
+       * 复合赋值
+       */
+      if (exp[0] === '+=') {
+				const incExp = this._transformer.transformAssignAdd(exp);
+				return this.eval(incExp, env);
+			}
+
+      /**
+       * 自减
+       */
+      if (exp[0] === '-=') {
+				const decExp = this._transformer.transformAssignDec(exp);
+				return this.eval(decExp, env);
+			}
+
+      /** for 循环体 */
+			if (exp[0] === 'for') {
+				const forExp = this._transformer.transformForToWhile(exp);
+				return this.eval(forExp, env);
+			}
+
+
 			/**
 			 * 定义一个函数 同时 声明一个匿名函数
 			 */
 			if (exp[0] === 'def') {
+
 				// 声明普通函数
 				// const [, name, params, body] = exp;
 				// const fn = {
