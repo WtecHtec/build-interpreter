@@ -13,20 +13,22 @@ const switchTest = require('./switch_test')
 const incTest = require('./inc_test')
 const decTest = require('./dec_test')
 const forTest = require('./for_test')
+const classTest = require('./class_test')
 const eva = new Eva();
-selfTest(eva);
-mathTest(eva);
-variableTest(eva);
-blockTest(eva);
-ifTest(eva);
-whileTest(eva);
-eva.eval(['print', '"jjjj"', '"kk"']);
-parserTest();
-defFuncTest();
-lambdaFuncTest();
-switchTest();
-incTest();
-decTest();
-forTest();
+// selfTest(eva);
+// mathTest(eva);
+// variableTest(eva);
+// blockTest(eva);
+// ifTest(eva);
+// whileTest(eva);
+// eva.eval(['print', '"jjjj"', '"kk"']);
+// parserTest();
+// defFuncTest();
+// lambdaFuncTest();
+// switchTest();
+// incTest();
+// decTest();
+// forTest();
+classTest();
 console.log('All pass')
 

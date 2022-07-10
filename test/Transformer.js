@@ -59,7 +59,6 @@ module.exports = class Transformer {
   transformForToWhile(exp) {
     const [, forVal, forCond, ...forBlock] = exp;
     const forExp = ['begin', forVal, ['while', forCond, ['begin', ...forBlock]]];
-    console.log('forExp===', forExp)
     return forExp;
   }
 

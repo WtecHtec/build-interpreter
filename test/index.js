@@ -44,8 +44,16 @@ class Eva {
 
       /** 重新赋值变量 */
       if (exp[0] === 'set') {
-        const [_, name, value] = exp;
-        return env.assign(name, this.eval(value, env));
+        const [_, ref, value] = exp;
+				if(Array.isArray(ref) && ref[0] === 'prop') {
+					const [, instance, propName] = exp;
+					const instanceEnv = this.eval(instance, env);
+					return instanceEnv.define(
+						propName,
+						this.eval(value, env),
+					);
+				}
+        return env.assign(ref, this.eval(value, env));
       }
 
 			/** if 分支 */
@@ -134,7 +142,7 @@ class Eva {
 				// 声明一个匿名函数
 				// const varExp = ['var', name, ['lambda', params, body]]
 				// return this.eval(varExp, env);
-				
+				// console.log('fffff', env)
 				const varExp = this._transformer.transformDefToVarLambda(exp);
 				return this.eval(varExp, env);
 			}
@@ -150,6 +158,41 @@ class Eva {
 					env,
 				}
 			}
+
+			/**
+			 * class注册
+			 */
+			if (exp[0] === 'class') {
+				const [, name, parent, body] = exp;
+				const parentEnv = this.eval(parent, env) || env;
+				const classEnv = new Environment({}, parentEnv);
+				this._evalBody(body, classEnv);
+				return env.define(name, classEnv);
+			}
+
+			/**
+			 * new
+			 */
+			if (exp[0] === 'new') {
+				// console.log('classEnv===',exp[1])
+				console.log('classEnv===1', env)
+				const classEnv = this.eval(exp[1], env);
+				
+				const instanceEnv = new Environment({}, classEnv);
+				const args = exp.slice(2).map(arg => this.eval(arg, env))
+				this._callUserDefinedFunction(
+					classEnv.lookup('constructor'),
+					[instanceEnv, ...args]
+				);
+				return instanceEnv;
+			}
+      
+			if (exp[0] === 'prop') {
+				const [, instance, name] = exp;
+				const instanceEnv = this.eval(instance, env);
+				return instanceEnv.lookup(name);
+			}
+
 			/**
 			 * 执行内置函数
 			 */
@@ -161,14 +204,9 @@ class Eva {
 
 			/**
 			 * 执行自定义函数
-			 * 创建闭包概念
+			 * 
 			 */
-			const activationRecord = {};
-			fn.params.forEach((param, index) => {
-				activationRecord[param] = args[index];
-			})
-			const activationEnv = new  Environment(activationRecord, fn.env);
-			return this._evalBody(fn.body, activationEnv);
+			return this._callUserDefinedFunction(fn, args);
 		}
 
 		/** 获取声明变量的值 */
@@ -177,6 +215,22 @@ class Eva {
 		}
 
 		throw `Unimplemented: ${JSON.stringify(exp)}`;
+	}
+
+	/**
+	 * 执行自定义函数
+	 */
+	_callUserDefinedFunction(fn, args) {
+		const activationRecord = {};
+		fn.params.forEach((param, index) => {
+			activationRecord[param] = args[index];
+		})
+		// 创建闭包概念
+		const activationEnv = new Environment(
+			activationRecord,
+			fn.env
+		)
+		return this._evalBody(fn.body, activationEnv);
 	}
 
 	/**
