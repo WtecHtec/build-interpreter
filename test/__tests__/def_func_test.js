@@ -5,7 +5,11 @@ module.exports = (eva) => {
     run(`
     (begin
       (def add (x)
-        (+ x x)
+				(begin 
+					(var b x)
+					(+ b b)
+				)
+        
       )
       (print (add 2) )
       (add 2)

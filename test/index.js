@@ -45,8 +45,9 @@ class Eva {
       /** 重新赋值变量 */
       if (exp[0] === 'set') {
         const [_, ref, value] = exp;
+				// console.log('ref', ref)
 				if(Array.isArray(ref) && ref[0] === 'prop') {
-					const [, instance, propName] = exp;
+					const [, instance, propName] = ref;
 					const instanceEnv = this.eval(instance, env);
 					return instanceEnv.define(
 						propName,
@@ -174,10 +175,7 @@ class Eva {
 			 * new
 			 */
 			if (exp[0] === 'new') {
-				// console.log('classEnv===',exp[1])
-				console.log('classEnv===1', env)
 				const classEnv = this.eval(exp[1], env);
-				
 				const instanceEnv = new Environment({}, classEnv);
 				const args = exp.slice(2).map(arg => this.eval(arg, env))
 				this._callUserDefinedFunction(
@@ -240,16 +238,16 @@ class Eva {
 	 * @returns 
 	 */
 	_evalBody(body, env) {
-		if (body[0] === 'beigin') {
+		if (body[0] === 'begin') {
 			return this._evalBlock(body, env);
 		}
 		return this.eval(body, env);
 	}
 	/**
 	 * 块级处理
-	 * @param {*} block 
-	 * @param {*} env 
-	 * @returns 
+	 * @param {*} block
+	 * @param {*} env
+	 * @returns
 	 */
   _evalBlock(block, env) {
     let result;
