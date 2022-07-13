@@ -12,6 +12,17 @@ class Eva {
 		this._transformer = new Transformer();
 	}
 	/**
+	 * 全局环境 运行环境
+	 * @param {*} expressions
+	 * @returns 
+	 */
+	evalGlobal(expressions) {
+		return this._evalBlock(
+			['block', expressions],
+			this.global
+		)
+	}
+	/**
 	 *  创建eva解释器
 	 *  全局变量环境
 	 * @param {*} exp 
@@ -45,7 +56,6 @@ class Eva {
       /** 重新赋值变量 */
       if (exp[0] === 'set') {
         const [_, ref, value] = exp;
-				// console.log('ref', ref)
 				if(Array.isArray(ref) && ref[0] === 'prop') {
 					const [, instance, propName] = ref;
 					const instanceEnv = this.eval(instance, env);
@@ -143,7 +153,7 @@ class Eva {
 				// 声明一个匿名函数
 				// const varExp = ['var', name, ['lambda', params, body]]
 				// return this.eval(varExp, env);
-				// console.log('fffff', env)
+				
 				const varExp = this._transformer.transformDefToVarLambda(exp);
 				return this.eval(varExp, env);
 			}
@@ -170,6 +180,13 @@ class Eva {
 				this._evalBody(body, classEnv);
 				return env.define(name, classEnv);
 			}
+			/**
+			 * 执行父级运行环境
+			 */
+			if (exp[0] === 'super') {
+				const [, className] = exp;
+				return this.eval(className, env).parent;
+			}
 
 			/**
 			 * new
@@ -190,6 +207,8 @@ class Eva {
 				const instanceEnv = this.eval(instance, env);
 				return instanceEnv.lookup(name);
 			}
+
+
 
 			/**
 			 * 执行内置函数

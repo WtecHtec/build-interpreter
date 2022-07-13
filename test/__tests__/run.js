@@ -14,6 +14,7 @@ const incTest = require('./inc_test')
 const decTest = require('./dec_test')
 const forTest = require('./for_test')
 const classTest = require('./class_test')
+const surpTest = require('./surp_test')
 const eva = new Eva();
 // selfTest(eva);
 // mathTest(eva);
@@ -29,6 +30,6 @@ const eva = new Eva();
 // incTest();
 // decTest();
 // forTest();
-classTest();
+surpTest();
 console.log('All pass')
 
