@@ -2,6 +2,8 @@
 const Environment = require('./Environment');
 const globalEnv = require('./GlobalEnvironment');
 const Transformer = require('./Transformer');
+const Ast = require('./parser/index')
+const fs = require('fs');
 class Eva {
 	/**
 	 * 创建全局变量环境
@@ -17,8 +19,8 @@ class Eva {
 	 * @returns 
 	 */
 	evalGlobal(expressions) {
-		return this._evalBlock(
-			['block', expressions],
+		return this._evalBody(
+			expressions,
 			this.global
 		)
 	}
@@ -208,8 +210,26 @@ class Eva {
 				return instanceEnv.lookup(name);
 			}
 
+			/**
+			 * 注册模块
+			 */
+			if (exp[0] === 'module') {
+				const [, name, body] = exp;
+				const moduleEnv = new Environment({}, env);
+				this._evalBody(body, moduleEnv);
+				return env.define(name, moduleEnv);
+			}
 
-
+			if (exp[0] === 'improt') {
+				const [, name] = exp;
+				const moduleSrc = fs.readFileSync(
+					`${__dirname}/modules/${name}.eva`,
+					'utf-8',
+				);
+				const body = Ast(`(begin ${moduleSrc})`);
+				const moduleExp = ['module', name, body];
+				return this.eval(moduleExp, this.global);
+			}
 			/**
 			 * 执行内置函数
 			 */

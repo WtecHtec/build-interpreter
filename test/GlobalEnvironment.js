@@ -16,7 +16,8 @@ module.exports = new Environment({
 		return op1 + op2;
 	},
 	'-'(op1, op2) {
-		if(op2 === null) return -op1;
+		console.log(-op1)
+		if(op2 === null || op2 === undefined) return -op1;
 		return op1 - op2;
 	},
 	'/'(op1, op2) {
