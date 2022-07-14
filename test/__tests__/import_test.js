@@ -1,0 +1,21 @@
+const run = require('../run')
+const assert = require('assert');
+module.exports = (eva) => {
+  assert.strictEqual(
+    run(`
+			(import Math)
+			(print ((prop Math abs) (- 10)))
+      (print (prop Math MAX_VALUE) )
+			(+ 3 3)
+    `),
+		6
+  )
+}
+
+/**
+ * 
+ *  (exports abs square)
+ *	(import (export1 export2) name)
+ *
+ * 
+ * */

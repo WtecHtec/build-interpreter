@@ -1,0 +1,10 @@
+(def abs (value)
+  (if (< value 0)
+    (begin 
+      (print value "o")
+      (- value)
+    )
+    (print value 0)
+  )
+)
+(var MAX_VALUE 10000)

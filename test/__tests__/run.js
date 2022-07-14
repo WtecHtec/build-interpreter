@@ -16,6 +16,7 @@ const forTest = require('./for_test')
 const classTest = require('./class_test')
 const surpTest = require('./surp_test')
 const moduleTest = require('./module_test')
+const improtTest = require('./import_test')
 const eva = new Eva();
 // selfTest(eva);
 // mathTest(eva);
@@ -33,6 +34,7 @@ const eva = new Eva();
 // forTest();
 // classTest();
 // surpTest();
-moduleTest();
+// moduleTest();
+improtTest();
 console.log('All pass')
 

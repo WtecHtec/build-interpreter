@@ -220,7 +220,10 @@ class Eva {
 				return env.define(name, moduleEnv);
 			}
 
-			if (exp[0] === 'improt') {
+      /**
+       * 引用模块
+       */
+			if (exp[0] === 'import') {
 				const [, name] = exp;
 				const moduleSrc = fs.readFileSync(
 					`${__dirname}/modules/${name}.eva`,
