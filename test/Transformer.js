@@ -74,7 +74,7 @@ module.exports = class Transformer {
     return assAddExp;
   }
 
-    /**
+	/**
    * 复合赋值 -=
    * 示例 [+= x 10]
    * @param {*} exp 
@@ -85,5 +85,23 @@ module.exports = class Transformer {
     assAddExp[2] = ['-' , variable, value];
     return assAddExp;
   }
+
+	/**
+	 * 按需引用
+   * (import (export1 export2) Math)
+	 * (improt Math)
+   * （var export1 (porp Math export1)）
+   * @param {*} exp 
+   */
+	transformImports(exp) {
+		const [, arg1, arg2] = exp;
+		const resExps = [];
+		const importExp = ['import', arg2];
+		resExps.push(importExp);
+		arg1.forEach(item => {
+			resExps.push(['var', item, ['prop', arg2, item]]);
+		});
+		return resExps;
+	}
 
 };

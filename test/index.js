@@ -294,7 +294,24 @@ class Eva {
   _evalBlock(block, env) {
     let result;
     const [_, ...expressions] = block;
-    expressions.forEach(exp => {
+		let runExp = [];
+		/**
+		 * import (exp1 exp2) math
+		 * 转换
+		 */
+		expressions.forEach(item => {
+			if (Array.isArray(item) && item[0] === 'import') {
+				const [, arg1] = item;
+				if (Array.isArray(arg1)) {
+					const moduleExp = this._transformer.transformImports(item);
+					runExp = [...runExp, ...moduleExp];
+					return;
+				}
+				runExp.push(item);
+			}
+			runExp.push(item);
+		})
+    runExp.forEach(exp => {
       result = this.eval(exp, env)
     })
     return result;

@@ -4,6 +4,6 @@
     (begin 
       (- value)
     )
-    (print value MAX_VALUE)
+    (print value 0)
   )
 )
