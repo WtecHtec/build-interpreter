@@ -7,3 +7,4 @@
     (print value 0)
   )
 )
+(exports abs MAX_VALUE)

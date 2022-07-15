@@ -56,5 +56,19 @@ class Environment {
     }
     return this.parent.resolve(name);
   }
+	// 
+	remove(name) {
+		delete this.record[name];
+	}
+	// 
+	resolveOwn(name) {
+		if (this.record.hasOwnProperty(name)) {
+      return true;
+    }
+		return false;
+	}
+	repleacRecord(newRecord) {
+		this.record = newRecord;
+	}
 }
 module.exports = Environment;

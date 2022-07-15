@@ -3,8 +3,8 @@ const assert = require('assert');
 module.exports = (eva) => {
   assert.strictEqual(
     run(`
-			(import (MAX_VALUE abs) Math)
-			(print (abs (- 22)) "k")
+			(import (MAX_VALUE abs) Exports)
+			(print MAX_VALUE)
 			(+ 3 3)
     `),
 		6

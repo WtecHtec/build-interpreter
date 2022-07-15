@@ -220,6 +220,19 @@ class Eva {
 				return env.define(name, moduleEnv);
 			}
 
+			if (exp[0] === 'exports') {
+				const [, ...exps] = exp;
+				let exprotModlue = {};
+				exps.forEach(item => {
+					if (!env.resolveOwn(item)) throw `undefine ${ item}`
+					const exportItem = {};
+					exportItem[item] = env.lookup(item);
+					exprotModlue = Object.assign(exprotModlue, exportItem);
+				});
+				env.repleacRecord(exprotModlue);
+				return;
+			}
+
       /**
        * 引用模块
        */
@@ -231,6 +244,7 @@ class Eva {
 				);
 				const body = Ast(`(begin ${moduleSrc})`);
 				const moduleExp = ['module', name, body];
+				// console.log(moduleExp)
 				return this.eval(moduleExp, this.global);
 			}
 			/**
@@ -308,10 +322,13 @@ class Eva {
 					return;
 				}
 				runExp.push(item);
+				return;
 			}
 			runExp.push(item);
 		})
+		// console.log('runExp', runExp)
     runExp.forEach(exp => {
+			
       result = this.eval(exp, env)
     })
     return result;
