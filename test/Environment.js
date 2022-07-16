@@ -56,17 +56,28 @@ class Environment {
     }
     return this.parent.resolve(name);
   }
-	// 
+	/**
+   * 删除变量
+   * @param {*} name
+   */
 	remove(name) {
 		delete this.record[name];
 	}
-	// 
+	/**
+   * 判断变量是否存在当前运行环境内
+   * @param {*} name 
+   * @returns 
+   */
 	resolveOwn(name) {
 		if (this.record.hasOwnProperty(name)) {
       return true;
     }
 		return false;
 	}
+  /**
+   * 暴力替换当前运行环境中的变量
+   * @param {*} newRecord
+   */
 	repleacRecord(newRecord) {
 		this.record = newRecord;
 	}
